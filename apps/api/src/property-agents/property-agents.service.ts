@@ -1,57 +1,85 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePropertyAgentDto } from './dto/create-property_agent.dto';
-import { UpdatePropertyAgentDto } from './dto/update-property_agent.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreatePropertyAgentDto } from './dto/create-property-agent.dto';
+import { UpdatePropertyAgentDto } from './dto/update-property-agent.dto';
+import {
+  PropertyAgentDetailResponse,
+  PropertyAgentResponse,
+  propertyAgentDetailSelect,
+  propertyAgentSummarySelect,
+  toPropertyAgentDetailResponse,
+  toPropertyAgentResponse,
+} from './property-agents.mapper';
+
+const isRecordNotFound = (error: unknown): boolean =>
+  error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025';
 
 @Injectable()
 export class PropertyAgentsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async upsert(updatePropertyAgentDto: UpdatePropertyAgentDto) {
-    const { id, ...data } = updatePropertyAgentDto;
+  async create(dto: CreatePropertyAgentDto): Promise<PropertyAgentResponse> {
+    const agent = await this.prisma.propertyAgent.create({
+      data: dto,
+      select: propertyAgentSummarySelect,
+    });
 
-    if (id) {
-      return this.prisma.propertyAgent.update({
-        where: { id },
-        data,
-      });
+    return toPropertyAgentResponse(agent);
+  }
+
+  async findAll(): Promise<PropertyAgentResponse[]> {
+    const rows = await this.prisma.propertyAgent.findMany({
+      select: propertyAgentSummarySelect,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    });
+
+    return rows.map(toPropertyAgentResponse);
+  }
+
+  async findOne(id: string): Promise<PropertyAgentDetailResponse> {
+    const agent = await this.prisma.propertyAgent.findUnique({
+      where: { id },
+      select: propertyAgentDetailSelect,
+    });
+
+    if (!agent) {
+      throw new NotFoundException(`Property agent with id "${id}" was not found.`);
     }
 
-    return this.prisma.propertyAgent.create({
-      data: data as CreatePropertyAgentDto,
-    });
+    return toPropertyAgentDetailResponse(agent);
   }
 
-  async findAll() {
-    return this.prisma.propertyAgent.findMany({
-      include: {
-        properties: true,
-        notes: true,
-      },
-    });
+  async update(
+    id: string,
+    dto: UpdatePropertyAgentDto,
+  ): Promise<PropertyAgentResponse> {
+    try {
+      const agent = await this.prisma.propertyAgent.update({
+        where: { id },
+        data: dto,
+        select: propertyAgentSummarySelect,
+      });
+
+      return toPropertyAgentResponse(agent);
+    } catch (error) {
+      if (isRecordNotFound(error)) {
+        throw new NotFoundException(`Property agent with id "${id}" was not found.`);
+      }
+
+      throw error;
+    }
   }
 
-  async findOne(id: string) {
-    return this.prisma.propertyAgent.findUnique({
-      where: { id },
-      include: {
-        properties: {
-          include: {
-            family: {
-              include: {
-                tenants: true,
-              },
-            },
-          },
-        },
-        notes: true,
-      },
-    });
-  }
+  async remove(id: string): Promise<void> {
+    try {
+      await this.prisma.propertyAgent.delete({ where: { id } });
+    } catch (error) {
+      if (isRecordNotFound(error)) {
+        throw new NotFoundException(`Property agent with id "${id}" was not found.`);
+      }
 
-  async remove(id: string) {
-    return this.prisma.propertyAgent.delete({
-      where: { id },
-    });
+      throw error;
+    }
   }
 }
