@@ -1,28 +1,52 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { PropertyAgentsService } from './property_agents.service';
-import { UpdatePropertyAgentDto } from './dto/update-property_agent.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { CreatePropertyAgentDto } from './dto/create-property-agent.dto';
+import { UpdatePropertyAgentDto } from './dto/update-property-agent.dto';
+import {
+  PropertyAgentDetailResponse,
+  PropertyAgentResponse,
+} from './property-agents.mapper';
+import { PropertyAgentsService } from './property-agents.service';
 
 @Controller('property-agents')
 export class PropertyAgentsController {
   constructor(private readonly propertyAgentsService: PropertyAgentsService) {}
 
-  @Post('upsert')
-  upsert(@Body() updatePropertyAgentDto: UpdatePropertyAgentDto) {
-    return this.propertyAgentsService.upsert(updatePropertyAgentDto);
+  @Post()
+  create(@Body() dto: CreatePropertyAgentDto): Promise<PropertyAgentResponse> {
+    return this.propertyAgentsService.create(dto);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<PropertyAgentResponse[]> {
     return this.propertyAgentsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<PropertyAgentDetailResponse> {
     return this.propertyAgentsService.findOne(id);
   }
 
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePropertyAgentDto,
+  ): Promise<PropertyAgentResponse> {
+    return this.propertyAgentsService.update(id, dto);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id') id: string): Promise<void> {
     return this.propertyAgentsService.remove(id);
   }
 }
