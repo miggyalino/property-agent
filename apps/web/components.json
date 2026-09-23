@@ -1,8 +1,8 @@
 {
-  "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "base-maia",
-  "rsc": false,
-  "tsx": true,
+  "$schema": "https://shadcn-vue.com/schema.json",
+  "style": "reka-lyra",
+  "font": "space-grotesk",
+  "typescript": true,
   "tailwind": {
     "config": "tailwind.config.js",
     "css": "src/style.css",
@@ -12,14 +12,15 @@
   },
   "iconLibrary": "lucide",
   "rtl": false,
+  "pointer": false,
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
-    "hooks": "@/hooks"
+    "composables": "@/composables"
   },
-  "menuColor": "default",
+  "menuColor": "inverted-translucent",
   "menuAccent": "subtle",
   "registries": {}
 }
