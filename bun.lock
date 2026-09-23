@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "my-turborepo",
+      "dependencies": {
+        "zod": "^4.6.5",
+      },
       "devDependencies": {
         "@repo/eslint-config": "*",
         "@repo/typescript-config": "*",
