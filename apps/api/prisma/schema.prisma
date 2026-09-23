@@ -7,6 +7,77 @@ datasource db {
   url      = "file::memory:?cache=shared"
 }
 
-model Placeholder {
-  id Int @id @default(autoincrement())
+model PropertyAgent {
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  mobileNumber String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  properties Property[]
+  notes      Note[]
+
+  @@map("property_agents")
+}
+
+model Property {
+  id        String        @id @default(cuid())
+  address   String
+  agentId   String
+  agent     PropertyAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  family    Family?
+  notes     Note[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([agentId])
+  @@map("properties")
+}
+
+model Family {
+  id         String   @id @default(cuid())
+  name       String
+  propertyId String   @unique
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  tenants    Tenant[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("families")
+}
+
+model Tenant {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  familyId  String
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([familyId])
+  @@map("tenants")
+}
+
+model Note {
+  id         String        @id @default(cuid())
+  title      String
+  content    String
+  type       String
+  dueDate    DateTime?
+  completed  Boolean       @default(false)
+  agentId    String
+  agent      PropertyAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  propertyId String?
+  property   Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([agentId])
+  @@index([propertyId])
+  @@map("notes")
 }
