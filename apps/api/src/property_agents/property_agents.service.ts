@@ -1,26 +1,57 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePropertyAgentDto } from './dto/create-property_agent.dto';
 import { UpdatePropertyAgentDto } from './dto/update-property_agent.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PropertyAgentsService {
-  create(createPropertyAgentDto: CreatePropertyAgentDto) {
-    return 'This action adds a new propertyAgent';
+  constructor(private prisma: PrismaService) {}
+
+  async upsert(updatePropertyAgentDto: UpdatePropertyAgentDto) {
+    const { id, ...data } = updatePropertyAgentDto;
+
+    if (id) {
+      return this.prisma.propertyAgent.update({
+        where: { id },
+        data,
+      });
+    }
+
+    return this.prisma.propertyAgent.create({
+      data: data as CreatePropertyAgentDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all propertyAgents`;
+  async findAll() {
+    return this.prisma.propertyAgent.findMany({
+      include: {
+        properties: true,
+        notes: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} propertyAgent`;
+  async findOne(id: string) {
+    return this.prisma.propertyAgent.findUnique({
+      where: { id },
+      include: {
+        properties: {
+          include: {
+            family: {
+              include: {
+                tenants: true,
+              },
+            },
+          },
+        },
+        notes: true,
+      },
+    });
   }
 
-  update(id: number, updatePropertyAgentDto: UpdatePropertyAgentDto) {
-    return `This action updates a #${id} propertyAgent`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} propertyAgent`;
+  async remove(id: string) {
+    return this.prisma.propertyAgent.delete({
+      where: { id },
+    });
   }
 }
