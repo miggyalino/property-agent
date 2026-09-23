@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "bun run build && concurrently -k \"swc src -d dist --strip-leading-paths --watch\" \"node --watch dist/main.js\"",
     "build": "swc src -d dist --strip-leading-paths",
-    "check-types": "tsc --noEmit -p tsconfig.build.json",
+    "check-types": "tsc --noEmit -p tsconfig.build.json && tsc --noEmit -p tsconfig.spec.json",
     "start": "node dist/main",
     "start:debug": "node --inspect --watch dist/main.js",
     "start:prod": "node dist/main",
@@ -19,12 +19,17 @@
   },
   "dependencies": {
     "@nestjs/common": "12.0.2",
+    "@nestjs/config": "^12.0.1",
     "@nestjs/core": "12.0.2",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "12.0.2",
+    "@nestjs/swagger": "^12.0.2",
     "@prisma/client": "5.22.0",
     "@repo/api": "*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "escape-html": "1.0.3",
+    "helmet": "^8.3.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },
