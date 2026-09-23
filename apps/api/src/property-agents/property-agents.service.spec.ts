@@ -130,10 +130,10 @@ describe('PropertyAgentsService', () => {
       await expect(service.remove('missing')).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('resolves with no value on success', async () => {
+    it('returns the deleted agent on success', async () => {
       prisma.propertyAgent.delete.mockResolvedValue(AGENT_ROW as never);
 
-      await expect(service.remove('agent_1')).resolves.toBeUndefined();
+      await expect(service.remove('agent_1')).resolves.toEqual(AGENT_RESPONSE);
     });
   });
 });

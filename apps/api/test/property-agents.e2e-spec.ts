@@ -36,14 +36,15 @@ describe('PropertyAgents (e2e)', () => {
         .send(validAgent('e2e.create@example.com'))
         .expect(201);
 
-      expect(response.body).toMatchObject({
+      expect(response.body.message).toBe('Property agent created successfully.');
+      expect(response.body.data).toMatchObject({
         firstName: 'Ada',
         lastName: 'Lovelace',
         email: 'e2e.create@example.com',
       });
-      expect(response.body.id).toEqual(expect.any(String));
-      expect(response.body).not.toHaveProperty('properties');
-      expect(response.body).not.toHaveProperty('notes');
+      expect(response.body.data.id).toEqual(expect.any(String));
+      expect(response.body.data).not.toHaveProperty('properties');
+      expect(response.body.data).not.toHaveProperty('notes');
     });
 
     it('rejects an invalid email with 400 and a list of messages', async () => {
@@ -87,10 +88,11 @@ describe('PropertyAgents (e2e)', () => {
         .get('/property-agents')
         .expect(200);
 
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThan(0);
-      expect(response.body[0]).not.toHaveProperty('properties');
-      expect(response.body[0]).not.toHaveProperty('notes');
+      expect(response.body.message).toBe('Property agents retrieved successfully.');
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data.length).toBeGreaterThan(0);
+      expect(response.body.data[0]).not.toHaveProperty('properties');
+      expect(response.body.data[0]).not.toHaveProperty('notes');
     });
   });
 
@@ -110,11 +112,12 @@ describe('PropertyAgents (e2e)', () => {
         .expect(201);
 
       const response = await request(app.getHttpServer())
-        .patch(`/property-agents/${created.body.id}`)
+        .patch(`/property-agents/${created.body.data.id}`)
         .send({ firstName: 'Grace' })
         .expect(200);
 
-      expect(response.body).toMatchObject({
+      expect(response.body.message).toBe('Property agent updated successfully.');
+      expect(response.body.data).toMatchObject({
         firstName: 'Grace',
         lastName: 'Lovelace',
       });
@@ -129,17 +132,18 @@ describe('PropertyAgents (e2e)', () => {
   });
 
   describe('DELETE /property-agents/:id', () => {
-    it('returns 204 with an empty body', async () => {
+    it('returns 200 with a message and the deleted agent', async () => {
       const created = await request(app.getHttpServer())
         .post('/property-agents')
         .send(validAgent('e2e.delete@example.com'))
         .expect(201);
 
       const response = await request(app.getHttpServer())
-        .delete(`/property-agents/${created.body.id}`)
-        .expect(204);
+        .delete(`/property-agents/${created.body.data.id}`)
+        .expect(200);
 
-      expect(response.body).toEqual({});
+      expect(response.body.message).toBe('Property agent deleted successfully.');
+      expect(response.body.data.id).toBe(created.body.data.id);
     });
 
     it('returns 404 for an unknown id', async () => {

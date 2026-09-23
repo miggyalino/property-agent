@@ -3,12 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiResponse, apiResponse } from '../common/responses/api-response';
 import { CreatePropertyAgentDto } from './dto/create-property-agent.dto';
 import { UpdatePropertyAgentDto } from './dto/update-property-agent.dto';
 import {
@@ -22,31 +21,41 @@ export class PropertyAgentsController {
   constructor(private readonly propertyAgentsService: PropertyAgentsService) {}
 
   @Post()
-  create(@Body() dto: CreatePropertyAgentDto): Promise<PropertyAgentResponse> {
-    return this.propertyAgentsService.create(dto);
+  async create(
+    @Body() dto: CreatePropertyAgentDto,
+  ): Promise<ApiResponse<PropertyAgentResponse>> {
+    const agent = await this.propertyAgentsService.create(dto);
+    return apiResponse('Property agent created successfully.', agent);
   }
 
   @Get()
-  findAll(): Promise<PropertyAgentResponse[]> {
-    return this.propertyAgentsService.findAll();
+  async findAll(): Promise<ApiResponse<PropertyAgentResponse[]>> {
+    const agents = await this.propertyAgentsService.findAll();
+    return apiResponse('Property agents retrieved successfully.', agents);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<PropertyAgentDetailResponse> {
-    return this.propertyAgentsService.findOne(id);
+  async findOne(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<PropertyAgentDetailResponse>> {
+    const agent = await this.propertyAgentsService.findOne(id);
+    return apiResponse('Property agent retrieved successfully.', agent);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdatePropertyAgentDto,
-  ): Promise<PropertyAgentResponse> {
-    return this.propertyAgentsService.update(id, dto);
+  ): Promise<ApiResponse<PropertyAgentResponse>> {
+    const agent = await this.propertyAgentsService.update(id, dto);
+    return apiResponse('Property agent updated successfully.', agent);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string): Promise<void> {
-    return this.propertyAgentsService.remove(id);
+  async remove(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<PropertyAgentResponse>> {
+    const agent = await this.propertyAgentsService.remove(id);
+    return apiResponse('Property agent deleted successfully.', agent);
   }
 }

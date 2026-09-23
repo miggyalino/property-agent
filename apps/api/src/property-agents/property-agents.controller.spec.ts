@@ -50,29 +50,51 @@ describe('PropertyAgentsController', () => {
     };
     service.create.mockResolvedValue(AGENT_RESPONSE);
 
-    await expect(controller.create(dto)).resolves.toEqual(AGENT_RESPONSE);
+    await expect(controller.create(dto)).resolves.toEqual({
+      message: 'Property agent created successfully.',
+      data: AGENT_RESPONSE,
+    });
     expect(service.create).toHaveBeenCalledWith(dto);
   });
 
   it('returns the list from the service', async () => {
     service.findAll.mockResolvedValue([AGENT_RESPONSE]);
 
-    await expect(controller.findAll()).resolves.toEqual([AGENT_RESPONSE]);
+    await expect(controller.findAll()).resolves.toEqual({
+      message: 'Property agents retrieved successfully.',
+      data: [AGENT_RESPONSE],
+    });
     expect(service.findAll).toHaveBeenCalledWith();
+  });
+
+  it('wraps the agent detail from findOne', async () => {
+    service.findOne.mockResolvedValue(AGENT_RESPONSE);
+
+    await expect(controller.findOne('agent_1')).resolves.toEqual({
+      message: 'Property agent retrieved successfully.',
+      data: AGENT_RESPONSE,
+    });
+    expect(service.findOne).toHaveBeenCalledWith('agent_1');
   });
 
   it('passes the route id and body separately to update', async () => {
     service.update.mockResolvedValue(AGENT_RESPONSE);
 
-    await controller.update('agent_1', { firstName: 'Ada' });
+    await expect(controller.update('agent_1', { firstName: 'Ada' })).resolves.toEqual({
+      message: 'Property agent updated successfully.',
+      data: AGENT_RESPONSE,
+    });
 
     expect(service.update).toHaveBeenCalledWith('agent_1', { firstName: 'Ada' });
   });
 
-  it('delegates remove to the service', async () => {
-    service.remove.mockResolvedValue(undefined);
+  it('returns a message and the deleted agent from remove', async () => {
+    service.remove.mockResolvedValue(AGENT_RESPONSE);
 
-    await expect(controller.remove('agent_1')).resolves.toBeUndefined();
+    await expect(controller.remove('agent_1')).resolves.toEqual({
+      message: 'Property agent deleted successfully.',
+      data: AGENT_RESPONSE,
+    });
     expect(service.remove).toHaveBeenCalledWith('agent_1');
   });
 });

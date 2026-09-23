@@ -71,9 +71,14 @@ export class PropertyAgentsService {
     }
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string): Promise<PropertyAgentResponse> {
     try {
-      await this.prisma.propertyAgent.delete({ where: { id } });
+      const agent = await this.prisma.propertyAgent.delete({
+        where: { id },
+        select: propertyAgentSummarySelect,
+      });
+
+      return toPropertyAgentResponse(agent);
     } catch (error) {
       if (isRecordNotFound(error)) {
         throw new NotFoundException(`Property agent with id "${id}" was not found.`);
