@@ -112,7 +112,9 @@ export class PrismaService
         CREATE INDEX IF NOT EXISTS "notes_propertyId_idx" ON "notes"("propertyId")
       `);
     } catch (error) {
-      this.logger.error(`Schema initialization failed: ${error.message}`);
+      this.logger.error(
+        `Schema initialization failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
       throw error;
     }
   }
@@ -214,7 +216,9 @@ export class PrismaService
 
       this.logger.log('Seeded: 3 agents, 5 properties, 4 families, 7 tenants, 6 notes');
     } catch (error) {
-      this.logger.warn(`Seeding warning: ${error.message}`);
+      this.logger.warn(
+        `Seeding warning: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 }
