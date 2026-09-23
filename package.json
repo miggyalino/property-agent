@@ -19,7 +19,8 @@
     "@repo/typescript-config": "*",
     "pnpm": "12.4.1",
     "prettier": "3.9.6",
-    "turbo": "^2.11.2"
+    "turbo": "^2.11.2",
+    "typescript": "5.7.3"
   },
   "engines": {
     "node": ">=24.11.0"
