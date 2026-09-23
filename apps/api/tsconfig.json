@@ -3,7 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "module": "Preserve",
+    "moduleResolution": "Bundler"
   },
   "include": ["src/**/*"],
   "exclude": []
