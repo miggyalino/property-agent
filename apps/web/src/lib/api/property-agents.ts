@@ -68,7 +68,7 @@ export const createPropertyAgent = async (
   let response: Response;
 
   try {
-    response = await fetch(`${API_BASE_URL}/property-agents/upsert`, {
+    response = await fetch(`${API_BASE_URL}/property-agents`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(agent),
