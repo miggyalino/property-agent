@@ -47,6 +47,7 @@
         "ts-loader": "9.6.2",
         "ts-node": "10.9.2",
         "tsconfig-paths": "4.2.0",
+        "tsx": "^4.23.15",
         "typescript": "7.0.2",
       },
     },
@@ -1984,6 +1985,8 @@
     "tsconfig-paths": ["tsconfig-paths@4.2.0", "", { "dependencies": { "json5": "^2.2.2", "minimist": "^1.2.6", "strip-bom": "^3.0.0" } }, "sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg=="],
 
     "tslib": ["tslib@2.8.1", "", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
+
+    "tsx": ["tsx@4.23.15", "", { "dependencies": { "esbuild": "~0.28.0" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "bin": { "tsx": "dist/cli.mjs" } }, "sha512-Yiex1Ovn8z2xPpOWckIiysV1SSyRMY9BkLF++q0yKiDxCqRhosKfMg3janKkiLBwZ5c/YryloKwGZcrEmtwxKw=="],
 
     "turbo": ["turbo@2.11.2", "", { "optionalDependencies": { "@turbo/darwin-64": "2.11.2", "@turbo/darwin-arm64": "2.11.2", "@turbo/linux-64": "2.11.2", "@turbo/linux-arm64": "2.11.2", "@turbo/windows-64": "2.11.2", "@turbo/windows-arm64": "2.11.2" }, "bin": { "turbo": "bin/turbo" } }, "sha512-s0GhnWXlAAN+wb2GRMQxnZgFweRWTAceRWW/4Lk9iHj7QuLZMjDxQQqu+Xoh7Nckuy8UiSim520w6yqP2+ertw=="],
 
