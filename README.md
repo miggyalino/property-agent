@@ -20,7 +20,7 @@ This Turborepo includes the following packages and apps:
 .
 ├── apps
 │   ├── api                       # NestJS app (https://nestjs.com).
-│   └── web                       # Next.js app (https://nextjs.org).
+│   └── web                       # Vue app (https://vuejs.org).
 └── packages
     ├── @repo/api                 # Shared NestJS resources.
     ├── @repo/eslint-config       # ESLint configurations (includes Prettier)
@@ -116,7 +116,7 @@ bun turbo link
 
 ## Useful Links
 
-This example takes inspiration from the [with-nextjs](https://github.com/vercel/turborepo/tree/main/examples/with-nextjs) Turborepo example and the [01-cats-app](https://github.com/nestjs/nest/tree/master/sample/01-cats-app) NestJS sample.
+This example takes inspiration from the [01-cats-app](https://github.com/nestjs/nest/tree/master/sample/01-cats-app) NestJS sample.
 
 Learn more about Turborepo:
 
