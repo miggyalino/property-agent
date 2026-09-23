@@ -61,7 +61,7 @@ tenants. `email` and `phone` are optional here — unlike on the agent — becau
 tenant contact details are often incomplete.
 
 **`Note` (`notes`)** is a piece of follow-up work: maintenance, pest control, a
-reminder. A note always belongs to an agent (`agentId`), and *optionally* to a
+reminder. A note always belongs to an agent (`agentId`), and _optionally_ to a
 property (`propertyId` is nullable), which allows for general agent to-dos that
 are not tied to any one address.
 
@@ -70,13 +70,13 @@ are not tied to any one address.
 The cascade rules encode the ownership above, and are worth knowing before you
 delete anything:
 
-| Relation | On delete |
-|---|---|
-| `Property` → `PropertyAgent` | **Cascade** — deleting an agent deletes their properties |
-| `Family` → `Property` | **Cascade** — deleting a property deletes its family |
-| `Tenant` → `Family` | **Cascade** — deleting a family deletes its tenants |
-| `Note` → `PropertyAgent` | **Cascade** — deleting an agent deletes their notes |
-| `Note` → `Property` | **SetNull** — deleting a property keeps the note, detached |
+| Relation                     | On delete                                                  |
+| ---------------------------- | ---------------------------------------------------------- |
+| `Property` → `PropertyAgent` | **Cascade** — deleting an agent deletes their properties   |
+| `Family` → `Property`        | **Cascade** — deleting a property deletes its family       |
+| `Tenant` → `Family`          | **Cascade** — deleting a family deletes its tenants        |
+| `Note` → `PropertyAgent`     | **Cascade** — deleting an agent deletes their notes        |
+| `Note` → `Property`          | **SetNull** — deleting a property keeps the note, detached |
 
 So deleting one agent can remove their properties, those properties' families, and
 those families' tenants, in a single cascade.
@@ -119,15 +119,15 @@ browser never makes a cross-origin request in development.
 
 ### API (`apps/api`)
 
-| Layer | Responsibility |
-|---|---|
-| `property-agents.controller.ts` | Routing and status codes only — no logic |
-| `property-agents.service.ts` | Business rules and all Prisma access |
-| `property-agents.mapper.ts` | Prisma `select` sets + row → response mapping |
-| `dto/` | Request shapes with class-validator decorators |
-| `common/filters/` | Prisma error → HTTP status translation |
-| `common/validators/` | Custom rules (e.g. mobile number digit count) |
-| `common/responses/` | The `{ message, data }` envelope helper |
+| Layer                           | Responsibility                                 |
+| ------------------------------- | ---------------------------------------------- |
+| `property-agents.controller.ts` | Routing and status codes only — no logic       |
+| `property-agents.service.ts`    | Business rules and all Prisma access           |
+| `property-agents.mapper.ts`     | Prisma `select` sets + row → response mapping  |
+| `dto/`                          | Request shapes with class-validator decorators |
+| `common/filters/`               | Prisma error → HTTP status translation         |
+| `common/validators/`            | Custom rules (e.g. mobile number digit count)  |
+| `common/responses/`             | The `{ message, data }` envelope helper        |
 
 Two things are registered globally in `app.module.ts` rather than `main.ts`:
 
@@ -155,16 +155,16 @@ startup instead of surfacing later.
 Base URL `http://localhost:3000`. Every response is wrapped in an envelope:
 
 ```jsonc
-{ "message": "...", "data": { /* or [ ... ] */ } }
+{ "message": "...", "data": {/* or [ ... ] */} }
 ```
 
-| Method | Path | Success | Description |
-|---|---|---|---|
-| `POST` | `/property-agents` | `201` | Create an agent |
-| `GET` | `/property-agents` | `200` | List all agents |
-| `GET` | `/property-agents/:id` | `200` | One agent, with properties and notes |
-| `PATCH` | `/property-agents/:id` | `200` | Partial update |
-| `DELETE` | `/property-agents/:id` | `200` | Delete, returns the deleted record |
+| Method   | Path                   | Success | Description                          |
+| -------- | ---------------------- | ------- | ------------------------------------ |
+| `POST`   | `/property-agents`     | `201`   | Create an agent                      |
+| `GET`    | `/property-agents`     | `200`   | List all agents                      |
+| `GET`    | `/property-agents/:id` | `200`   | One agent, with properties and notes |
+| `PATCH`  | `/property-agents/:id` | `200`   | Partial update                       |
+| `DELETE` | `/property-agents/:id` | `200`   | Delete, returns the deleted record   |
 
 ### `GET /property-agents`
 
@@ -200,11 +200,11 @@ under 255 characters and unique across agents, `mobileNumber` **10–15 digits**
 
 ### Errors
 
-| Status | When |
-|---|---|
-| `400` | Validation failed, or the body contained an unknown field. `message` is an array of strings |
-| `404` | No agent with that id |
-| `409` | An agent with that email already exists |
+| Status | When                                                                                        |
+| ------ | ------------------------------------------------------------------------------------------- |
+| `400`  | Validation failed, or the body contained an unknown field. `message` is an array of strings |
+| `404`  | No agent with that id                                                                       |
+| `409`  | An agent with that email already exists                                                     |
 
 ```bash
 curl -X POST http://localhost:3000/property-agents \
@@ -227,20 +227,3 @@ cd apps/api && bun run test:e2e   # supertest against a real app instance
 test referencing a method that no longer exists fails the build.
 
 ---
-
-## Known gaps
-
-- **No authentication or authorization.** Every endpoint is public. `GET /property-agents`
-  exposes names, emails and mobile numbers, and `GET /property-agents/:id` reaches
-  through to tenants' contact details.
-- **Seeding is destructive.** `PrismaService` deletes all five tables and re-seeds on
-  *every* boot, with no environment guard. Anything entered through the UI disappears
-  on the next restart — and `bun run dev` restarts on every file save.
-- **No migrations.** Tables come from hand-written raw SQL that duplicates
-  `schema.prisma`; because it uses `CREATE TABLE IF NOT EXISTS`, a schema change will
-  not be picked up on an existing database.
-- **A SQLite file is committed.** The datasource URL `file::memory:?cache=shared` is
-  read as a literal path, producing `apps/api/prisma/:memory:`, which is tracked in
-  git and goes dirty on every boot.
-- **No CI.** Nothing runs the gates above automatically.
-- **`apps/web` has no ESLint config**, so `turbo run lint` fails on that workspace.
